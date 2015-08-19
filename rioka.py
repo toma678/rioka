@@ -17,8 +17,8 @@ translatorClientSecret = ""
 token = ""
 sc = SlackClient(token)
 globalChannel = "C07RLKT6C" #dev - #gen: C07RLUEUV
-randomFirst  = ["Ryoukaishimashita!", "Wakarimashita!"]
-randomSecond = ["Please wait a sec...", "Gimmie a sec..."]
+randomFirst  = ["Ryoukaishimashita!", "Wakarimashita!", "Okay~"]
+randomSecond = ["Please wait a sec...", "Gimmie a sec...", "Hang on...", "Chotto mattete..."]
 if sc.rtm_connect():
     print "> Connected to Slack"
     while True:
@@ -30,7 +30,6 @@ if sc.rtm_connect():
                     if evt["user"] != "U08C6H4JV":
                         channel = evt["channel"]
                         message = evt["text"]
-
                         if evt["user"] == "U07RM885B": # Kaori
                             if message.startswith("say in "):
                                 if message == "say in ":
@@ -41,15 +40,14 @@ if sc.rtm_connect():
                                     messageReturn = ("%s: %s" % (toChannel, string[3]))
                                     sc.api_call("chat.postMessage", as_user="true", channel=toChannel, text=string[3].encode('utf-8'))
 
-                        if ("nya" in message) or (u"にゃ" in message) or (u"ニャ" in message):
-                            sc.api_call("chat.postMessage", as_user="true", channel=channel, text=u"(=^・^=)")
-
                         if message.startswith("rioka"):
                             # RIOKA COMMAND
-                            if (message == "rioka") or (message == "rioka "):
-                                command = "rioka"
-                            else:
+                            if (message[:6] == "rioka "):
                                 command = message.split("rioka ",1)[1]
+                            elif (message[:6] == "rioka:"):
+                                command = message.split("rioka:",1)[1]
+                            else:
+                                command = "rioka"
 
                             # COMMANDS
                             if command.startswith("translate"):
@@ -84,6 +82,41 @@ if sc.rtm_connect():
                                     response.close()
                                     messageReturn = ("%s\n%s" % (data["items"][0]["link"], data["items"][0]["snippet"]))
                                     sc.api_call("chat.postMessage", as_user="true", channel=channel, text=messageReturn.encode('utf-8'), unfurl_links="false", unfurl_media="false")
+
+                            elif command.startswith("who is"):
+                                # USER INFO
+                                if (command == "who is") or (command == "who is "):
+                                    sc.api_call("chat.postMessage", as_user="true", channel=channel, text="At least give me a name... :disappointed:")
+                                else:
+                                    waitText = ("_%s_ %s" % (random.choice(randomFirst), random.choice(randomSecond)))
+                                    sc.api_call("chat.postMessage", as_user="true", channel=channel, text=waitText)
+                                    string = urllib.quote_plus(command.split("who is ",1)[1])
+                                    userList = json.loads(sc.api_call("users.list"))
+                                    for x in userList["members"]:
+                                        if string == x["name"]:
+                                            userInfo = json.loads(sc.api_call("users.info", user=x["id"]))
+                                            if not "real_name" in userInfo["user"]["profile"]:
+                                                userInfo["user"]["profile"]["real_name"] = "*unknown*"
+                                            if not "email" in userInfo["user"]["profile"]:
+                                                userInfo["user"]["profile"]["email"] = "Unknown email"
+                                            if not "skype" in userInfo["user"]["profile"]:
+                                                userInfo["user"]["profile"]["skype"] = "unknown"
+                                            if not "phone" in userInfo["user"]["profile"]:
+                                                userInfo["user"]["profile"]["phone"] = "unknown"
+                                            if userInfo["user"]["id"] == "U09218631": # nano
+                                                extraData = "my waifu, "
+                                            elif userInfo["user"]["id"] == "U0896EZ1N": #overwatch
+                                                extraData = "my senpai who doesn't notice me, "
+                                            elif userInfo["user"]["id"] == "U07RM885B": #kaori
+                                                extraData = "my goshujinsama, "
+                                            else:
+                                                extraData = ""
+                                            messageReturn = ("%s is %salso known as '%s' <%s>\nUser ID: %s\nSkype: %s\nPhone: %s" % (userInfo["user"]["name"], extraData, userInfo["user"]["profile"]["real_name"], userInfo["user"]["profile"]["email"], userInfo["user"]["id"], userInfo["user"]["profile"]["skype"], userInfo["user"]["profile"]["phone"]))
+                                            sc.api_call("chat.postMessage", as_user="true", channel=channel, text=messageReturn)
+                                            break
+                                    else:
+                                        sc.api_call("chat.postMessage", as_user="true", channel=channel, text="I don't know who you're talking about! :anguished: Try checking the name?")
+        time.sleep(.1)
 
 else:
     print "> Connection Failed."
