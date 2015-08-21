@@ -10,11 +10,10 @@ import re
 from microsofttranslator import Translator
 from slackclient import SlackClient
 
-print "> Rioka has started"
+from inc.settings import *
+from inc.randomStrings import *
 
-execfile("inc/import.py")
-execfile("inc/settings.py")
-execfile("inc/randomStrings.py")
+print "> Rioka has started"
 
 if sc.rtm_connect():
     print "> Connected to Slack"
