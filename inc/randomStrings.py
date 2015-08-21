@@ -12,5 +12,6 @@ randomWait = ["Please wait a sec...",
               "Gimmie a sec...",
               "Hang on...",
               "Chotto mattete..."]
-randomReturn = ["Rioka is tadaima~☆",
-                "Nyaa~☆"]
+
+randomRioka = ["What's up?",
+               "Nandesu ka?"]

@@ -9,7 +9,7 @@ execfile("inc/randomStrings.py")
 
 if sc.rtm_connect():
     print "> Connected to Slack"
-    sc.api_call("chat.postMessage", as_user="true", channel="#general", text=random.choice(randomReturn))
+    sc.api_call("chat.postMessage", as_user="true", channel="#general", text="Rioka is tadaima~☆")
     while True:
         new_evts = sc.rtm_read()
         for evt in new_evts:
@@ -19,6 +19,15 @@ if sc.rtm_connect():
                     if evt["user"] != "U08C6H4JV":
                         channel = evt["channel"]
                         message = evt["text"]
+                        #user = evt["user"]
+                        #userInfo = json.loads(sc.api_call("users.info", user=user))
+                        #userName = userInfo["user"]["name"]
+                        #messageReturn = ("%s: %s" % (userName, message))
+                        #print("channel: %s \nuser: %s \nmessage %s" % (channel, user, message))
+                        #print messageReturn
+
+                        #if evt["user"] == "U0896EZ1N": # Overwatch
+                        #    sc.api_call("chat.postMessage", as_user="true", channel=channel, text="shh")
 
                         if evt["user"] == "U07RM885B": # Kaori
                             if message.startswith("say in "):
@@ -31,29 +40,27 @@ if sc.rtm_connect():
                                     sc.api_call("chat.postMessage", as_user="true", channel=toChannel, text=string[3].encode('utf-8'))
 
                         if evt["user"] == "U09218631": # Nano
-                            execfile("inc/converseNano.py")
+                            execfile("converse/nano.py")
 
                         if ("nya" in message) or (u"にゃ" in message) or (u"ニャ" in message):
                             sc.api_call("chat.postMessage", as_user="true", channel=channel, text="(=^・^=)")
 
-                        if message.startswith("rioka"):
+                        if message.lower().startswith("rioka"):
                             # RIOKA COMMAND
-                            if (message[:6] == "rioka "):
-                                command = message.split("rioka ",1)[1]
-                            elif (message[:6] == "rioka:"):
-                                command = message.split("rioka:",1)[1]
+                            if (message.lower()[:6] == "rioka "):
+                                command = message.lower().split("rioka ",1)[1]
                             else:
                                 command = "rioka"
 
                             # COMMANDS
                             if command.startswith("translate"):
-                                execfile("inc/commandTranslate.py")
-
+                                execfile("commands/translate.py")
                             elif command.startswith("search"):
-                                execfile("inc/commandSearch.py")
-
+                                execfile("commands/search.py")
                             elif command.startswith("who is"):
-                                execfile("inc/commandUserinfo.py")
+                                execfile("commands/userinfo.py")
+                            elif command == "rioka":
+                                sc.api_call("chat.postMessage", as_user="true", channel=channel, text=random.choice(randomRioka))
 
         time.sleep(.1)
 

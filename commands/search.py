@@ -6,7 +6,7 @@ if (command == "search") or (command == "search "):
 else:
     waitText = ("_%s_ %s" % (random.choice(randomOkay), random.choice(randomWait)))
     sc.api_call("chat.postMessage", as_user="true", channel=channel, text=waitText)
-    string = urllib.quote_plus(command.split("search ",1)[1])
+    string = re.sub("[ ]", "#", command.split("search ",1)[1], 0, 0)
     response = urllib2.urlopen("https://www.googleapis.com/customsearch/v1?key=AIzaSyAruE7wV7LaL1tZ1XJRHCtA7pmuz9EfXl8&cx=006735756282586657842:s7i_4ej9amu&q=" + string)
     data = json.loads(response.read())
     response.close()

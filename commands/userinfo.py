@@ -6,7 +6,7 @@ if (command == "who is") or (command == "who is "):
 else:
     waitText = ("_%s_ %s" % (random.choice(randomOkay), random.choice(randomWait)))
     sc.api_call("chat.postMessage", as_user="true", channel=channel, text=waitText)
-    string = urllib.quote_plus(command.split("who is ",1)[1])
+    string = command.split("who is ",1)[1]
     userList = json.loads(sc.api_call("users.list"))
     for x in userList["members"]:
         if string == x["name"]:
